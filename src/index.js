@@ -1,12 +1,11 @@
 export default {
   async scheduled(event, env, ctx) {
     const sources = [
-      { name: "36氪", url: "https://36kr.com/feed", format: "rss", articles: 4 },
-      { name: "r/management", url: "https://www.reddit.com/r/management/.rss", format: "atom", articles: 2, headers: { "User-Agent": "Mozilla/5.0 (compatible; RSS Reader)" } },
-      { name: "r/leadership", url: "https://www.reddit.com/r/leadership/.rss", format: "atom", articles: 2, headers: { "User-Agent": "Mozilla/5.0 (compatible; RSS Reader)" } },
-      { name: "r/sales", url: "https://www.reddit.com/r/sales/.rss", format: "atom", articles: 2, headers: { "User-Agent": "Mozilla/5.0 (compatible; RSS Reader)" } },
+      { name: "r/management", url: "https://www.reddit.com/r/management/.rss", format: "atom", articles: 3, headers: { "User-Agent": "Mozilla/5.0 (compatible; RSS Reader)" } },
+      { name: "r/leadership", url: "https://www.reddit.com/r/leadership/.rss", format: "atom", articles: 3, headers: { "User-Agent": "Mozilla/5.0 (compatible; RSS Reader)" } },
+      { name: "r/sales", url: "https://www.reddit.com/r/sales/.rss", format: "atom", articles: 3, headers: { "User-Agent": "Mozilla/5.0 (compatible; RSS Reader)" } },
       { name: "r/InsuranceAgent", url: "https://www.reddit.com/r/InsuranceAgent/.rss", format: "atom", articles: 2, headers: { "User-Agent": "Mozilla/5.0 (compatible; RSS Reader)" } },
-      { name: "r/quotes", url: "https://www.reddit.com/r/quotes/.rss", format: "atom", articles: 2, headers: { "User-Agent": "Mozilla/5.0 (compatible; RSS Reader)" } }
+      { name: "r/quotes", url: "https://www.reddit.com/r/quotes/.rss", format: "atom", articles: 3, headers: { "User-Agent": "Mozilla/5.0 (compatible; RSS Reader)" } }
     ];
 
     let allArticles = [];

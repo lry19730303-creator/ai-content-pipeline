@@ -61,26 +61,21 @@ ${articleList}
       emailHtml = "<p>抱歉，今天的 AI 总结生成失败，请检查模型运行状态。</p>";
     }
 
-    const toEmail = "lry19730303@gmail.com";
-
     try {
-      const emailRes = await fetch("https://api.resend.com/emails", {
+      const pushRes = await fetch("http://www.pushplus.plus/send", {
         method: "POST",
-        headers: {
-          "Authorization": `Bearer ${env.RESEND_API_KEY}`,
-          "Content-Type": "application/json"
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          from: "AI Assistant <onboarding@resend.dev>",
-          to: toEmail,
-          subject: "【每日管理洞察】今日管理智慧深度分析",
-          html: emailHtml
+          token: env.PUSHPLUS_TOKEN,
+          title: "【每日管理洞察】今日管理智慧深度分析",
+          content: emailHtml,
+          template: "html"
         })
       });
 
-      console.log("邮件发送状态:", await emailRes.json());
+      console.log("微信推送结果:", await pushRes.json());
     } catch (e) {
-      console.log("发邮件失败:", e);
+      console.log("微信推送失败:", e);
     }
   }
 };

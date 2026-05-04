@@ -1,10 +1,9 @@
 import { createClient } from "@supabase/supabase-js";
 
 const DEEPSEEK_API_KEY = process.env.DEEPSEEK_API_KEY;
-const RESEND_API_KEY = process.env.RESEND_API_KEY;
+const PUSHPLUS_TOKEN = process.env.PUSHPLUS_TOKEN;
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_KEY = process.env.SUPABASE_KEY;
-const TO_EMAIL = process.env.TO_EMAIL || "lry19730303@gmail.com";
 
 const sources = [
   { name: "36氪", url: "https://36kr.com/feed", format: "rss", articles: 5 },
@@ -78,26 +77,23 @@ ${articleList}
     emailHtml = "<p>抱歉，今天的 AI 总结生成失败，请检查模型运行状态。</p>";
   }
 
-  // 发送邮件
+  // 推送到微信 (PushPlus)
   try {
-    console.log("正在发送邮件...");
-    const emailRes = await fetch("https://api.resend.com/emails", {
+    console.log("正在推送到微信...");
+    const pushRes = await fetch("http://www.pushplus.plus/send", {
       method: "POST",
-      headers: {
-        "Authorization": `Bearer ${RESEND_API_KEY}`,
-        "Content-Type": "application/json"
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        from: "AI Assistant <onboarding@resend.dev>",
-        to: TO_EMAIL,
-        subject: "【每日管理洞察】今日管理智慧深度分析",
-        html: emailHtml
+        token: PUSHPLUS_TOKEN,
+        title: "【每日管理洞察】今日管理智慧深度分析",
+        content: emailHtml,
+        template: "html"
       })
     });
-    const result = await emailRes.json();
-    console.log("邮件发送结果:", JSON.stringify(result, null, 2));
+    const result = await pushRes.json();
+    console.log("微信推送结果:", JSON.stringify(result, null, 2));
   } catch (e) {
-    console.log("发邮件失败:", e.message);
+    console.log("微信推送失败:", e.message);
   }
 
   // 可选：存储到 Supabase

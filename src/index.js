@@ -1,11 +1,15 @@
 export default {
   async scheduled(event, env, ctx) {
     const sources = [
-      { name: "r/management", url: "https://www.reddit.com/r/management/.rss", format: "atom", articles: 3, headers: { "User-Agent": "Mozilla/5.0 (compatible; RSS Reader)" } },
-      { name: "r/leadership", url: "https://www.reddit.com/r/leadership/.rss", format: "atom", articles: 3, headers: { "User-Agent": "Mozilla/5.0 (compatible; RSS Reader)" } },
-      { name: "r/sales", url: "https://www.reddit.com/r/sales/.rss", format: "atom", articles: 3, headers: { "User-Agent": "Mozilla/5.0 (compatible; RSS Reader)" } },
+      { name: "r/management", url: "https://www.reddit.com/r/management/.rss", format: "atom", articles: 2, headers: { "User-Agent": "Mozilla/5.0 (compatible; RSS Reader)" } },
+      { name: "r/leadership", url: "https://www.reddit.com/r/leadership/.rss", format: "atom", articles: 2, headers: { "User-Agent": "Mozilla/5.0 (compatible; RSS Reader)" } },
+      { name: "r/sales", url: "https://www.reddit.com/r/sales/.rss", format: "atom", articles: 2, headers: { "User-Agent": "Mozilla/5.0 (compatible; RSS Reader)" } },
       { name: "r/InsuranceAgent", url: "https://www.reddit.com/r/InsuranceAgent/.rss", format: "atom", articles: 2, headers: { "User-Agent": "Mozilla/5.0 (compatible; RSS Reader)" } },
-      { name: "r/quotes", url: "https://www.reddit.com/r/quotes/.rss", format: "atom", articles: 3, headers: { "User-Agent": "Mozilla/5.0 (compatible; RSS Reader)" } }
+      { name: "r/quotes", url: "https://www.reddit.com/r/quotes/.rss", format: "atom", articles: 2, headers: { "User-Agent": "Mozilla/5.0 (compatible; RSS Reader)" } },
+      { name: "Simon Sinek (YT)", url: "https://www.youtube.com/feeds/videos.xml?channel_id=UCPmfPl-BsCd3wmE8i45LAoA", format: "youtube", articles: 2 },
+      { name: "Harvard Business Review (YT)", url: "https://www.youtube.com/feeds/videos.xml?channel_id=UCWo4IA01TXzBeGJJKWHOG9g", format: "youtube", articles: 2 },
+      { name: "Valuetainment (YT)", url: "https://www.youtube.com/feeds/videos.xml?channel_id=UCIHdDJ0tjn_3j-FS7s_X1kQ", format: "youtube", articles: 2 },
+      { name: "Brendon Burchard (YT)", url: "https://www.youtube.com/feeds/videos.xml?channel_id=UCySH3WVP-5d4aJIfn8-WoPA", format: "youtube", articles: 2 }
     ];
 
     let allArticles = [];
@@ -88,6 +92,7 @@ ${articleList}
 };
 
 function parseFeed(xmlText, format, sourceName) {
+  if (format === "youtube") return parseYoutubeItems(xmlText, sourceName);
   return format === "atom" ? parseAtomItems(xmlText, sourceName) : parseRSSItems(xmlText, sourceName);
 }
 
@@ -131,6 +136,33 @@ function parseAtomItems(xmlText, sourceName) {
     }
   }
   return items;
+}
+
+function parseYoutubeItems(xmlText, sourceName) {
+  const items = [];
+  const entryRegex = /<entry[^>]*>([\s\S]*?)<\/entry>/gi;
+  let match;
+  while ((match = entryRegex.exec(xmlText)) !== null) {
+    const entryContent = match[1];
+    const title = extractTagContent(entryContent, 'title');
+    const link = extractAtomLink(entryContent);
+    const desc = extractMediaDescription(entryContent);
+    if (title && link) {
+      items.push({
+        title,
+        link,
+        source: sourceName,
+        description: desc ? stripHtml(desc).slice(0, 1500) : title
+      });
+    }
+  }
+  return items;
+}
+
+function extractMediaDescription(xml) {
+  const match = /<media:description[^>]*>([\s\S]*?)<\/media:description>/i.exec(xml);
+  if (!match) return null;
+  return match[1].trim();
 }
 
 function extractAtomLink(xml) {

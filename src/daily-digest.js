@@ -6,9 +6,12 @@ const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_KEY = process.env.SUPABASE_KEY;
 
 const sources = [
-  { name: "36氪", url: "https://36kr.com/feed", format: "rss", articles: 5 },
-  { name: "r/management", url: "https://www.reddit.com/r/management/.rss", format: "atom", articles: 3, headers: { "User-Agent": "Mozilla/5.0 (compatible; RSS Reader)" } },
-  { name: "r/leadership", url: "https://www.reddit.com/r/leadership/.rss", format: "atom", articles: 3, headers: { "User-Agent": "Mozilla/5.0 (compatible; RSS Reader)" } }
+  { name: "36氪", url: "https://36kr.com/feed", format: "rss", articles: 4 },
+  { name: "r/management", url: "https://www.reddit.com/r/management/.rss", format: "atom", articles: 2, headers: { "User-Agent": "Mozilla/5.0 (compatible; RSS Reader)" } },
+  { name: "r/leadership", url: "https://www.reddit.com/r/leadership/.rss", format: "atom", articles: 2, headers: { "User-Agent": "Mozilla/5.0 (compatible; RSS Reader)" } },
+  { name: "r/sales", url: "https://www.reddit.com/r/sales/.rss", format: "atom", articles: 2, headers: { "User-Agent": "Mozilla/5.0 (compatible; RSS Reader)" } },
+  { name: "r/InsuranceAgent", url: "https://www.reddit.com/r/InsuranceAgent/.rss", format: "atom", articles: 2, headers: { "User-Agent": "Mozilla/5.0 (compatible; RSS Reader)" } },
+  { name: "r/quotes", url: "https://www.reddit.com/r/quotes/.rss", format: "atom", articles: 2, headers: { "User-Agent": "Mozilla/5.0 (compatible; RSS Reader)" } }
 ];
 
 async function main() {
@@ -27,7 +30,7 @@ async function main() {
         continue;
       }
       const xml = await res.text();
-      const items = parseFeed(xml, source.format);
+      const items = parseFeed(xml, source.format, source.name);
       console.log(`  → 解析到 ${items.length} 篇文章`);
 
       if (items.length > 0) {
@@ -55,13 +58,18 @@ async function main() {
 ${articleList}
 
 请你完成以下任务：
-1. 首先，过滤掉与管理学、商业管理、团队领导力完全无关的内容（如纯娱乐八卦、纯技术教程、体育赛事等）。英文内容同样适用此规则。
-2. 然后，针对管理相关的内容，撰写一篇《每日管理洞察》深度分析文章。
+1. 首先，过滤掉完全无关的低质量内容。
+2. 然后，围绕以下四个核心板块，撰写一篇《每日管理洞察》深度分析文章：
+
+【板块一：培训与训练】提炼关于员工培训、销售训练、技能提升、学习型组织建设的最新方法和案例。
+【板块二：人寿保险销售】提炼人寿保险销售技巧、客户经营、保险团队管理相关的内容。
+【板块三：领导力】提炼关于领导力发展、团队激励、组织文化建设、管理者自我修炼的洞见。
+【板块四：今日金句】从所有文章中摘选3-5条最有启发的金句（中英文皆可），每条附一句话点评。
 
 输出要求：
 - 格式：一篇完整的分析文章（HTML格式），不要输出"日报第X条"这样的列表格式
-- 结构：提炼5-6个今日核心管理议题，结合文章中提到的具体案例进行深入分析，对比不同来源的观点
-- 重点：给出可直接用于团队管理的实操建议和行动指南，越具体越好
+- 结构：四个板块各自独立成节，每个板块结合具体案例深入分析，对比不同来源的观点
+- 重点：每个板块都要给出可直接落地执行的实操建议
 - 字数：4000-5500字
 - 排版：使用<h2>、<p>、<ul>、<li>、<strong>等HTML标签，干净专业
 - 引用原文观点时，保留原文链接
@@ -143,11 +151,11 @@ async function callDeepSeek(prompt) {
 
 // --- RSS/Atom Parsing ---
 
-function parseFeed(xmlText, format) {
-  return format === "atom" ? parseAtomItems(xmlText) : parseRSSItems(xmlText);
+function parseFeed(xmlText, format, sourceName) {
+  return format === "atom" ? parseAtomItems(xmlText, sourceName) : parseRSSItems(xmlText, sourceName);
 }
 
-function parseRSSItems(xmlText) {
+function parseRSSItems(xmlText, sourceName) {
   const items = [];
   const itemRegex = /<item[^>]*>([\s\S]*?)<\/item>/gi;
   let match;
@@ -160,7 +168,7 @@ function parseRSSItems(xmlText) {
       items.push({
         title,
         link,
-        source: "36氪",
+        source: sourceName,
         description: desc ? stripHtml(desc).slice(0, 3000) : ''
       });
     }
@@ -168,7 +176,7 @@ function parseRSSItems(xmlText) {
   return items;
 }
 
-function parseAtomItems(xmlText) {
+function parseAtomItems(xmlText, sourceName) {
   const items = [];
   const entryRegex = /<entry[^>]*>([\s\S]*?)<\/entry>/gi;
   let match;
@@ -181,7 +189,7 @@ function parseAtomItems(xmlText) {
       items.push({
         title,
         link,
-        source: "Reddit",
+        source: sourceName,
         description: content ? stripHtml(content).slice(0, 1500) : title
       });
     }

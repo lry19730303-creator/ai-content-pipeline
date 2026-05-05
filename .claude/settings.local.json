@@ -1,30 +1,21 @@
 {
   "permissions": {
+    "defaultMode": "dontAsk",
     "allow": [
-      "Bash(curl -s \"https://api.rss2json.com/v1/api.json?rss_url=https://www.huxiu.com/rss/0.xml\")",
-      "Bash(curl -s -w \"\\\\n\\\\nHTTP_CODE: %{http_code}\" \"https://rsshub.app/huxiu/article\")",
-      "Bash(curl -s -w \"\\\\n\\\\nHTTP_CODE: %{http_code}\" \"https://36kr.com/feed\")",
-      "Bash(curl -s \"https://www.huxiu.com/\")",
-      "Bash(curl -s -w \"\\\\nHTTP_CODE: %{http_code}\" \"https://www.ifanr.com/feed\")",
-      "Bash(curl -s -w \"\\\\nHTTP_CODE: %{http_code}\" \"https://www.tmtpost.com/rss.xml\")",
-      "Bash(curl -s \"https://36kr.com/feed\")",
-      "Bash(curl -s \"https://www.tmtpost.com/rss.xml\")",
-      "Bash(python3 -c ' *)",
-      "Bash(curl -s \"https://api.rss2json.com/v1/api.json?rss_url=https://36kr.com/feed\")",
-      "Bash(npx wrangler *)",
-      "Bash(curl -s \"https://ai-content-pipeline.ruyu-liu.workers.dev/__scheduled\")",
-      "Bash(curl -s -w \"\\\\nHTTP: %{http_code}\" \"https://ai-content-pipeline.ruyu-liu.workers.dev\")",
-      "Bash(node -e ' *)",
-      "Bash(node --check src/index.js)",
-      "Bash(curl -s \"http://localhost:8787/__scheduled\")",
-      "Bash(curl -s -w \"\\\\nHTTP: %{http_code}\" \"http://127.0.0.1:8788/__scheduled\")",
-      "Bash(curl -s -w \"\\\\nHTTP: %{http_code}\" \"https://ai-content-pipeline.ruyu-liu.workers.dev/__scheduled\")",
-      "Bash(curl -s \"http://127.0.0.1:8788/__scheduled\")",
-      "Bash(kill %1)",
-      "Bash(curl -s -w \"\\\\nHTTP: %{http_code}\" \"https://www.reddit.com/r/management/.rss\")",
-      "Bash(curl -s -w \"\\\\nHTTP: %{http_code}\" \"https://www.reddit.com/r/leadership/.rss\")",
-      "Bash(curl -s -w \"\\\\nHTTP: %{http_code}\" \"https://www.reddit.com/r/Entrepreneur/.rss\")",
-      "Bash(curl -s \"https://www.reddit.com/r/management/.rss\")"
+      "Bash(*)",
+      "Edit(*)",
+      "Write(*)",
+      "Read(*)",
+      "Glob(*)",
+      "Grep(*)",
+      "WebSearch(*)",
+      "WebFetch(*)",
+      "Skill(*)"
+    ],
+    "deny": [
+      "Bash(rm -rf *)",
+      "Bash(git reset --hard *)",
+      "Bash(git push --force *)"
     ]
   }
 }

@@ -78,14 +78,14 @@ ${articleList}
 - 引用原文观点时，保留原文链接
 - 只输出HTML代码，不要任何额外解释`;
 
-  let emailHtml = "";
+  let digestHtml = "";
   try {
     console.log("正在调用 DeepSeek API...");
-    emailHtml = await callDeepSeek(prompt);
-    console.log(`AI 返回 ${emailHtml.length} 字符`);
+    digestHtml = await callDeepSeek(prompt);
+    console.log(`AI 返回 ${digestHtml.length} 字符`);
   } catch (e) {
     console.log("AI 处理失败:", e.message);
-    emailHtml = "<p>抱歉，今天的 AI 总结生成失败，请检查模型运行状态。</p>";
+    digestHtml = "<p>抱歉，今天的 AI 总结生成失败，请检查模型运行状态。</p>";
   }
 
   // 推送到微信 (PushPlus)
@@ -97,7 +97,7 @@ ${articleList}
       body: JSON.stringify({
         token: PUSHPLUS_TOKEN,
         title: "【每日培训洞察】今日培训智慧深度分析",
-        content: emailHtml,
+        content: digestHtml,
         template: "html"
       })
     });
@@ -113,7 +113,7 @@ ${articleList}
       console.log("正在存储到 Supabase...");
       const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
       const { error } = await supabase.from("daily_digests").insert({
-        content: emailHtml,
+        content: digestHtml,
         article_count: allArticles.length,
         created_at: new Date().toISOString()
       });

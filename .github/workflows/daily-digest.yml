@@ -2,7 +2,7 @@ name: Daily Management Digest
 
 on:
   schedule:
-    - cron: '18 7 * * *'
+    - cron: '28 5 * * *'
   workflow_dispatch:
 
 jobs:

@@ -64,7 +64,7 @@ ${articleList}
     try {
       const aiResponse = await env.AI.run('@cf/meta/llama-3.1-8b-instruct-fast', {
         messages: [{ role: "user", content: prompt }],
-        max_tokens: 2048
+        max_tokens: 8192
       });
       emailHtml = aiResponse.response.replace(/```html|```/g, '');
     } catch (e) {

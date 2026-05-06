@@ -1,7 +1,9 @@
 import { createClient } from "@supabase/supabase-js";
 
 const DEEPSEEK_API_KEY = process.env.DEEPSEEK_API_KEY;
-const PUSHPLUS_TOKEN = process.env.PUSHPLUS_TOKEN;
+const RESEND_API_KEY = process.env.RESEND_API_KEY;
+const RESEND_TO_EMAIL = process.env.RESEND_TO_EMAIL;
+const RESEND_FROM_EMAIL = process.env.RESEND_FROM_EMAIL || "onboarding@resend.dev";
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_KEY = process.env.SUPABASE_KEY;
 
@@ -88,23 +90,32 @@ ${articleList}
     digestHtml = "<p>抱歉，今天的 AI 总结生成失败，请检查模型运行状态。</p>";
   }
 
-  // 推送到微信 (PushPlus)
-  try {
-    console.log("正在推送到微信...");
-    const pushRes = await fetch("http://www.pushplus.plus/send", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        token: PUSHPLUS_TOKEN,
-        title: "【每日培训洞察】今日培训智慧深度分析",
-        content: digestHtml,
-        template: "html"
-      })
-    });
-    const result = await pushRes.json();
-    console.log("微信推送结果:", JSON.stringify(result, null, 2));
-  } catch (e) {
-    console.log("微信推送失败:", e.message);
+  // 通过 Resend 推送邮件
+  if (RESEND_API_KEY && RESEND_TO_EMAIL) {
+    try {
+      console.log(`正在通过 Resend 发送邮件到 ${RESEND_TO_EMAIL}...`);
+      const resendRes = await fetch("https://api.resend.com/emails", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${RESEND_API_KEY}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          from: `每日培训洞察 <${RESEND_FROM_EMAIL}>`,
+          to: [RESEND_TO_EMAIL],
+          subject: "【每日培训洞察】今日培训智慧深度分析",
+          html: digestHtml
+        })
+      });
+      if (resendRes.ok) {
+        console.log("Resend 邮件发送成功");
+      } else {
+        const errBody = await resendRes.text();
+        console.log("Resend 发送失败:", resendRes.status, errBody);
+      }
+    } catch (e) {
+      console.log("Resend 发送失败:", e.message);
+    }
   }
 
   // 可选：存储到 Supabase

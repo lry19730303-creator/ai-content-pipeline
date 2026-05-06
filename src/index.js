@@ -73,20 +73,27 @@ ${articleList}
     }
 
     try {
-      const pushRes = await fetch("http://www.pushplus.plus/send", {
+      const resendRes = await fetch("https://api.resend.com/emails", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Authorization": `Bearer ${env.RESEND_API_KEY}`,
+          "Content-Type": "application/json"
+        },
         body: JSON.stringify({
-          token: env.PUSHPLUS_TOKEN,
-          title: "【每日培训洞察】今日培训智慧深度分析",
-          content: emailHtml,
-          template: "html"
+          from: `每日培训洞察 <${env.RESEND_FROM_EMAIL || "onboarding@resend.dev"}>`,
+          to: [env.RESEND_TO_EMAIL],
+          subject: "【每日培训洞察】今日培训智慧深度分析",
+          html: emailHtml
         })
       });
 
-      console.log("微信推送结果:", await pushRes.json());
+      if (resendRes.ok) {
+        console.log("Resend 邮件发送成功");
+      } else {
+        console.log("Resend 发送失败:", resendRes.status, await resendRes.text());
+      }
     } catch (e) {
-      console.log("微信推送失败:", e);
+      console.log("Resend 发送失败:", e);
     }
   }
 };
